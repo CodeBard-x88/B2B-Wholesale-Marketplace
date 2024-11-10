@@ -1,9 +1,16 @@
-var express = require('express');
-var router = express.Router();
+const mongoose = require("./db");
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const userschema = mongoose.Schema({
 
-module.exports = router;
+  Name: {type: String, required: true},
+  username: {type: String, required: true, unique: true},
+  Email: {type: String, required: true, unique: true},
+  Phone: {type: String, required: true, unique: true},
+  password: {type: String, required: true},
+  isSeller: {type: Boolean, default: false},
+  JoiningDate: {type: Date, default: Date.now},
+  StoreID: { type: mongoose.Types.ObjectId, ref: 'Store', default: null }
+
+})
+
+module.exports = mongoose.model("user", userschema);
