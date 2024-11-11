@@ -1,5 +1,5 @@
 var express = require('express');
-const userModel = require("./users");
+const userModel = require("../Schemas/users");
 var router = express.Router();
 
 
