@@ -9,8 +9,15 @@ const userschema = mongoose.Schema({
   password: {type: String, required: true},
   isSeller: {type: Boolean, default: false},
   JoiningDate: {type: Date, default: Date.now},
-  StoreID: { type: mongoose.Types.ObjectId, ref: 'Store', default: null }
+  StoreID: { type: mongoose.Types.ObjectId, ref: 'Store', default: null },
+  role: {type: String, enum: ['user' , 'admin'] , default: 'user'}
+})
 
+userschema.method('validatePassword', async function(password){
+  if (password === this.password)
+    return true;
+
+  return false;
 })
 
 module.exports = mongoose.model("user", userschema);
