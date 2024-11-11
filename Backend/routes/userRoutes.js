@@ -1,6 +1,7 @@
 const express = require("express");
 const userModel = require("../Schemas/users");  
 const jwt = require("jsonwebtoken");
+const {aunthenticateToken, authorizeUser} = require("../middlewares/usersMiddlewares");
 require('dotenv').config();
 
 var router = express.Router();
@@ -59,5 +60,9 @@ router.post('/login', async (req, res) => {
     }
     
 });
+
+router.get("/profile", aunthenticateToken, authorizeUser("user"), (req,res) => {
+    return res.status(200).json({message: `Welcome ${req.user.userName}!`});
+})
 
 module.exports = router;
