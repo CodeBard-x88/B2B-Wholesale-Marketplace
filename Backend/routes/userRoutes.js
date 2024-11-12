@@ -1,8 +1,11 @@
 const express = require("express");
-const userModel = require("../Schemas/users");  
+const userModel = require("../Schemas/users");
+const passwordResetModels = require('../Schemas/PasswordResetTokens');
 const jwt = require("jsonwebtoken");
 const {aunthenticateToken, authorizeUser} = require("../middlewares/usersMiddlewares");
 require('dotenv').config();
+const crypto = require('crypto');
+const transporter = require('../config/NodeMailerTransporter');
 
 var router = express.Router();
 
@@ -64,5 +67,45 @@ router.post('/login', async (req, res) => {
 router.get("/profile", aunthenticateToken, authorizeUser("user"), (req,res) => {
     return res.status(200).json({message: `Welcome ${req.user.userName}!`});
 })
+
+router.get("/forgotPassword", async (req, res) => {
+    const email = req.body.email;
+    if(!email)
+        return res.status(400).json({error: "No Email provided"});
+
+    try {
+        const user = await userModel.findOne({Email: email});
+        if(!user){
+            //create token, send email on the entered email, but don't create a password reset token document
+            console.log("User not found!");
+        }
+        else{
+            console.log("User found!");
+            //create a token
+            const resetToken = crypto.randomBytes(64).toString('hex');
+            console.log("Reset Token:  %s", resetToken);
+            //create tokens hash
+            const hash = crypto.createHash('sha256');
+            hash.update(resetToken);
+            const digest = hash.digest('hex');
+
+            passwordResetModels.create({userId: user._id , TokenHash: digest});
+
+            const url = "https://www.google.com/";
+            const info = await transporter.sendMail({
+                from: "solo.developer29@gmail.com",
+                to: "its.tayyab616@gmail.com",
+                subject: "Password Reset Link",
+                text: "Click on the link below to reset your password:",
+                html: '<a href="localhost:3000">Password Reset Link</a>'
+            })
+
+            console.log("Message ID: %s" , info.messageId);
+            res.send(200).json({response: "Message send successfully!"});
+        }
+    } catch (error) {
+        
+    }   
+});
 
 module.exports = router;
