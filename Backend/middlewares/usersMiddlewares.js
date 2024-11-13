@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../Schemas/users");
+const passwordResetModels = require('../Schemas/PasswordResetTokens');
+const crypto = require('crypto');
 require("dotenv").config();
 
 const aunthenticateToken = (req,res,next) => {
@@ -37,5 +39,30 @@ const authorizeUser = (requiredRole) => async (req, res, next) => {
     
 };
 
+const authenticatePasswordResetRequest = async (req, res, next) => {
+    const { userId, resetToken } = req.params; // make sure the parameter names match with the route
+    
+    try {
+        const token = await passwordResetModels.findOne({ userId: userId });
 
-module.exports = {aunthenticateToken, authorizeUser};
+    if (!token) {
+        return res.status(400).json({ error: "Invalid Reset Link!" });
+    }
+
+    const hash = crypto.createHash('sha256');
+    hash.update(resetToken);
+    const digest = hash.digest('hex');
+
+    if (token.TokenHash !== digest) {
+        return res.status(400).json({ error: "Invalid Reset Link!" });
+    }
+
+    console.log("Valid Reset Request");
+    next();
+    } catch (error) {
+        return res.status(400).json({error: "Invalid Reset Link!"});
+    }
+    
+};
+
+module.exports = {aunthenticateToken, authorizeUser, authenticatePasswordResetRequest};
