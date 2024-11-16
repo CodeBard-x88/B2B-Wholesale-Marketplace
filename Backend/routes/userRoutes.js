@@ -191,15 +191,14 @@ router.post("/sellerRegistration" , aunthenticateToken, authorizeUser('buyer'), 
 
     try {
         //authentication of buyer email is already done with the help of middleware
-        const seller = await sellerModel.create({businessEmail: req.body.businessEmail,
+        const seller = await sellerModel.create({BusinessEmail: req.body.businessEmail,
         AssociatedBuyerAccountEmail: req.body.buyerEmail,
         CNIC: req.body.CNIC,
         NTN: req.body.NTN,
         IBAN: req.body.IBAN,
     })
 
-    console.log("New Seller created: %s\nSeller status: %s" , seller._id, seller.sellerAccountStatus);
-    return res.send(200).json({message: "Thanks for submitting the Seller Registration form!\nWe have recieved your request. Your applicaiton is currently in pending Status.\nApplication's status will be updated within 24 hours."})
+    return res.status(200).json({message: "Thanks for submitting the Seller Registration form!\nWe have recieved your request. Your applicaiton is currently in pending Status.\nApplication's status will be updated within 24 hours."})
     } catch (error) {
        return res.send(500).json({error: "An error occurred while submitting the form!\n Apologies for the inconvenience! Please try again later."})
     }
