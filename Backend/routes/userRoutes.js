@@ -1,11 +1,13 @@
 const express = require("express");
 const userModel = require("../Schemas/users");
+const sellerModel = require("../Schemas/Seller");
 const passwordResetModels = require('../Schemas/PasswordResetTokens');
 const jwt = require("jsonwebtoken");
 const {aunthenticateToken, authorizeUser, authenticatePasswordResetRequest} = require("../middlewares/usersMiddlewares");
 require('dotenv').config();
 const crypto = require('crypto');
 const transporter = require('../config/NodeMailerTransporter');
+const SellerModel = require("../Schemas/Seller");
 
 var router = express.Router();
 
@@ -13,13 +15,12 @@ var router = express.Router();
 
 // const updateUserRoles = async () => {
 //     try {
-//       const users = await userModel.find({ role: { $exists: false } }); // Corrected query condition
+//       const users = await userModel.find({ role: { $exists: true } }); // Corrected query condition
   
 //       for (const doc of users) {
-//         doc.role = 'user';
+//         doc.role = 'buyer';
 //         await doc.save(); // Save the updated document
 //       }
-  
 //       console.log('User roles updated successfully');
 //     } catch (error) {
 //       console.error('Error updating user roles:', error);
@@ -64,7 +65,7 @@ router.post('/login', async (req, res) => {
     
 });
 
-router.get("/profile", aunthenticateToken, authorizeUser("user"), (req,res) => {
+router.get("/profile", aunthenticateToken, authorizeUser("buyer"), (req,res) => {
     return res.status(200).json({message: `Welcome ${req.user.userName}!`});
 })
 
@@ -86,7 +87,7 @@ router.get("/forgotPassword", async (req, res) => {
             // Generate a random userId if no user is found
             randomUserId = crypto.randomBytes(64).toString('hex');
             console.log("Random user id: " + randomUserId);
-            url = `http://localhost:3000/resetPassword/${randomUserId}/${resetToken}`;
+            url = `http://localhost:3000/users/resetPassword/${randomUserId}/${resetToken}`;
         } else {
             console.log("User found!");
             // Create token hash
@@ -180,6 +181,30 @@ router.get("/resetPassword/:userId/:resetToken", authenticatePasswordResetReques
     // If the token is valid, show a reset password form or success message
     res.send("Welcome to Reset Password!");
 });
+
+router.post("/sellerRegistration" , aunthenticateToken, authorizeUser('buyer'), async(req,res) => {
+    const {businessEmail, buyerEmail, IBAN, NTN, CNIC} = req.body;
+
+    if(!businessEmail || !IBAN || !NTN || !CNIC || !buyerEmail){
+        return res.status(400).json({error: "A required field is empty"});
+    }
+
+    try {
+        //authentication of buyer email is already done with the help of middleware
+        const seller = await sellerModel.create({businessEmail: req.body.businessEmail,
+        AssociatedBuyerAccountEmail: req.body.buyerEmail,
+        CNIC: req.body.CNIC,
+        NTN: req.body.NTN,
+        IBAN: req.body.IBAN,
+    })
+
+    console.log("New Seller created: %s\nSeller status: %s" , seller._id, seller.sellerAccountStatus);
+    return res.send(200).json({message: "Thanks for submitting the Seller Registration form!\nWe have recieved your request. Your applicaiton is currently in pending Status.\nApplication's status will be updated within 24 hours."})
+    } catch (error) {
+       return res.send(500).json({error: "An error occurred while submitting the form!\n Apologies for the inconvenience! Please try again later."})
+    }
+    
+})
 
 
 module.exports = router;
