@@ -7,10 +7,9 @@ const userschema = mongoose.Schema({
   Email: {type: String, required: true, unique: true},
   Phone: {type: String, required: true, unique: true},
   password: {type: String, required: true},
-  isSeller: {type: Boolean, default: false},
   JoiningDate: {type: Date, default: Date.now},
   StoreID: { type: mongoose.Types.ObjectId, ref: 'Store', default: null },
-  role: {type: String, enum: ['user' , 'admin'] , default: 'user'}
+  role: {type: String, enum: ['buyer', 'seller' , 'admin'] , default: 'buyer'}
 })
 
 userschema.method('validatePassword', async function(password){
