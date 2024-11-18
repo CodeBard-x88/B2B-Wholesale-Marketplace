@@ -3,11 +3,11 @@ const userModel = require("../Schemas/users");
 const sellerModel = require("../Schemas/Seller");
 const passwordResetModels = require('../Schemas/PasswordResetTokens');
 const jwt = require("jsonwebtoken");
-const {aunthenticateToken, authorizeUser, authenticatePasswordResetRequest} = require("../middlewares/usersMiddlewares");
+const {authenticateToken, authorizeUser, authenticatePasswordResetRequest} = require("../middlewares/usersMiddlewares");
 require('dotenv').config();
 const crypto = require('crypto');
 const transporter = require('../config/NodeMailerTransporter');
-const SellerModel = require("../Schemas/Seller");
+const UserModel = require("../Schemas/users");
 
 var router = express.Router();
 
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
     
 });
 
-router.get("/profile", aunthenticateToken, authorizeUser("buyer"), (req,res) => {
+router.get("/profile", authenticateToken, authorizeUser("buyer"), (req,res) => {
     return res.status(200).json({message: `Welcome ${req.user.userName}!`});
 })
 
@@ -182,7 +182,7 @@ router.get("/resetPassword/:userId/:resetToken", authenticatePasswordResetReques
     res.send("Welcome to Reset Password!");
 });
 
-router.post("/sellerRegistration" , aunthenticateToken, authorizeUser('buyer'), async(req,res) => {
+router.post("/sellerRegistration" , authenticateToken, authorizeUser('buyer'), async(req,res) => {
     const {businessEmail, buyerEmail, IBAN, NTN, CNIC} = req.body;
 
     if(!businessEmail || !IBAN || !NTN || !CNIC || !buyerEmail){
@@ -197,7 +197,12 @@ router.post("/sellerRegistration" , aunthenticateToken, authorizeUser('buyer'), 
         NTN: req.body.NTN,
         IBAN: req.body.IBAN,
     })
-
+    const user = await UserModel.findOne({_id: req.user.userId});
+    if(!user){
+        return res.status(500).json({error: "Can't find user! Please sign in again!"});
+    }
+    user.role = "seller";
+    await user.save();
     return res.status(200).json({message: "Thanks for submitting the Seller Registration form!\nWe have recieved your request. Your applicaiton is currently in pending Status.\nApplication's status will be updated within 24 hours."})
     } catch (error) {
        return res.send(500).json({error: "An error occurred while submitting the form!\n Apologies for the inconvenience! Please try again later."})
