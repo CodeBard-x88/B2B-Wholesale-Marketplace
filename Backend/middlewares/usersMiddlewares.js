@@ -4,7 +4,7 @@ const passwordResetModels = require('../Schemas/PasswordResetTokens');
 const crypto = require('crypto');
 require("dotenv").config();
 
-const aunthenticateToken = (req,res,next) => {
+const authenticateToken = (req,res,next) => {
     const token = req.headers['authorization'];
 
     if(!token){
@@ -65,4 +65,4 @@ const authenticatePasswordResetRequest = async (req, res, next) => {
     
 };
 
-module.exports = {aunthenticateToken, authorizeUser, authenticatePasswordResetRequest};
+module.exports = {authenticateToken, authorizeUser, authenticatePasswordResetRequest};
