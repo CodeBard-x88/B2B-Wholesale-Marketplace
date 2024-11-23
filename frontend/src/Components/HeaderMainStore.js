@@ -14,6 +14,7 @@ const Header = () => {
 
       <div className="w-1/2 items-center flex justify-center">
         <input type="text" placeholder="Search Products here..." className="outline-none h-10 w-full rounded-2xl p-5 text-black"/>
+        <FontAwesomeIcon icon="magnifying-glass" size="3xl" color="black" className="relative right-10"/>
       </div>
 
       <nav className="hidden md:flex space-x-10 items-center">

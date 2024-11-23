@@ -2,14 +2,14 @@
 import React from "react";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fab } from '@fortawesome/free-brands-svg-icons'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faUser,faMagnifyingGlass} from '@fortawesome/free-solid-svg-icons'
 import HeaderMainStore from "./Components/HeaderMainStore";
 
-library.add(fab, faUser)
+library.add(fab, faUser, faMagnifyingGlass)
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-black  text-green-500 flex flex-col">
+    <div className="min-h-screen bg-blck  text-green-500 flex flex-col">
       <HeaderMainStore />
       
     </div>
