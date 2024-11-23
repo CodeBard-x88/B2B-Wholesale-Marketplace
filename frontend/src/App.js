@@ -1,16 +1,17 @@
 // src/App.jsx
 import React from "react";
-import Header from "./Components/Header";
-import LoginForm from "./Components/LoginForm";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fab } from '@fortawesome/free-brands-svg-icons'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
+import HeaderMainStore from "./Components/HeaderMainStore";
+
+library.add(fab, faUser)
 
 const App = () => {
   return (
     <div className="min-h-screen bg-black  text-green-500 flex flex-col">
-      <Header />
-      {/* Responsive Layout */}
-      <div className="flex flex-col md:flex-row items-center justify-center p-8 space-y-8 md:space-y-0 md:space-x-8">
-        <LoginForm />
-      </div>
+      <HeaderMainStore />
+      
     </div>
   );
 };
