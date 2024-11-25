@@ -21,7 +21,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="bg-green-500 p-8 rounded-[68px] text-black w-full md:w-5/6 flex justify-center items-center md:justify-between">
+    <div className="bg-[#E8E8E8] p-8 rounded-[68px] text-black w-full md:w-5/6 flex justify-center items-center md:justify-between">
       <div className="hidden md:block w-1/2">
         <img src="SHOPPINGMAN.png" alt="shopping man" className="max-w-full h-auto" />
       </div>
