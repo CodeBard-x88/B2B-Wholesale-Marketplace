@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <header className="flex justify-between items-center px-14 my-6 bg-black text-green-500">
+    <header className="flex justify-between items-center px-14 my-1 text-green-500">
       <div className="flex items-center">
         <Link to='/'><img
           src="KaroobarLogo.png" 
