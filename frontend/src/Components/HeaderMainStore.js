@@ -1,9 +1,9 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const Header = () => {
+const Header = ({isLoggedIn = false}) => {
   return (
-    <header className="flex justify-between items-center px-14 bg-[#34383A]">
+    <header className="flex justify-between items-center px-4 h-14 bg-[#34383A]">
       <div className="flex items-center">
         <img
           src="KaroobarLogo.png" 
@@ -12,16 +12,35 @@ const Header = () => {
         />
       </div>
 
-      <div className="w-1/2 items-center flex justify-center">
+      <div className="hidden md:w-1/2 md:items-center md:flex md:justify-center">
         <input type="text" placeholder="Search Products here..." className="outline-none h-10 w-full rounded-2xl p-5 text-black"/>
         <FontAwesomeIcon icon="magnifying-glass" size="3xl" color="black" className="relative right-10"/>
       </div>
 
-      <nav className="hidden md:flex space-x-10 items-center">
-      <img alt="cart" src="/cart-icon.png" className="object-contain" style={{ width: '40px', height: '40px' }} />
-      <img alt="notifications" src="/notification-icon.png" className="object-contain" style={{ width: '40px', height: '40px' }} />
-      <div className="bg-[#FF7104] w-[1px] h-14"></div>
-      <FontAwesomeIcon icon="user" size="lg" color="white" />
+      <nav className="flex space-x-10 items-center">
+      <button className="appearance-button border-0 rounded-md text-[#FF7104] font-bold text-sm">
+            Track your order
+            </button>
+      <img alt="cart" src="/cart-icon.png" className="object-contain" style={{ width: '30px', height: '30px' }} />
+      
+      {
+        isLoggedIn === true?
+        (<>
+            <img alt="notifications" src="/notification-icon.png" className="object-contain" style={{ width: '40px', height: '40px' }} />
+            <div className="bg-[#FF7104] w-[1px] h-8"></div>
+            <FontAwesomeIcon icon="user" size="lg" color="white" />
+        </>)
+      :
+      (<>
+        
+        <a href="go" className="text-[#FF7104] font-semibold">Login</a>
+        <div className="bg-[#FF7104] w-[1px] h-8"></div>
+        <button className="bg-red-500 border border-red-500 rounded-md shadow-sm text-white font-bold text-sm leading-4 min-h-[40px] px-4 py-3 hover:bg-transparent hover:text-red-500 active:opacity-50">
+  Signup
+</button>
+      </>)
+      
+      }
       </nav>
     </header>
   );
