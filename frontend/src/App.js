@@ -20,7 +20,12 @@ const App = () => {
     },
     {
       path: '/login',
-      element: <><HeaderSimple/><LoginForm /></>
+      element: <><div className="min-h-screen bg-black  text-green-500 flex flex-col">
+      <HeaderSimple />
+      <div className="flex flex-col md:flex-row items-center justify-center p-8 space-y-8 md:space-y-0 md:space-x-8">
+        <LoginForm />
+      </div>
+    </div></>
     }
   ]);
   return (
