@@ -1,5 +1,6 @@
 import React from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from "react-router-dom";
 
 const Header = ({isLoggedIn = false}) => {
   return (
@@ -33,7 +34,7 @@ const Header = ({isLoggedIn = false}) => {
       :
       (<>
         
-        <a href="go" className="text-[#FF7104] font-semibold">Login</a>
+        <Link to="/login" className="text-[#FF7104] font-semibold">Login</Link>
         <div className="bg-[#FF7104] w-[1px] h-8"></div>
         <button className="bg-red-500 border border-red-500 rounded-md shadow-sm text-white font-bold text-sm leading-4 min-h-[40px] px-4 py-3 hover:bg-transparent hover:text-red-500 active:opacity-50">
   Signup
