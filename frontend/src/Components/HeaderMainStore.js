@@ -1,8 +1,13 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-const Header = ({isLoggedIn = false}) => {
+const Header = () => {
+
+  const location = useLocation();
+
+  const {isLoggedIn = false} = location.state || {};
+
   return (
     <header className="flex justify-between items-center px-4 h-14 bg-[#34383A]">
       <div className="flex items-center">
