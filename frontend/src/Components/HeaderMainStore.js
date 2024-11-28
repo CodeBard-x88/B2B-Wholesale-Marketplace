@@ -7,8 +7,7 @@ const Header = () => {
   const location = useLocation();
   const { isLoggedIn = false } = location.state || {};
   const [profileOptionsVisible, setProfileOptionsVisible] = useState(false);
-
-const Header = ({isLoggedIn = false}) => {
+  
   return (
     <header className="flex justify-between items-center px-4 h-14 bg-[#34383A]">
       <div className="flex items-center">
