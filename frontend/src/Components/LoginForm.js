@@ -1,8 +1,12 @@
 import React, { useState } from "react";
+import {useNavigate} from 'react-router-dom';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState(""); // Correct state declaration
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -14,10 +18,52 @@ const LoginForm = () => {
     name === "email" ? setEmail(value) : setPassword(value);
   };
 
-  const onFormSubmit = (e) => {
+  function ResetFormField(){
+    setEmail("");
+    setPassword("");
+  }
+
+  const onFormSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted!");
-    console.log({ email, password });
+    setErrorMessage("");
+    await fetch('http://localhost:5000/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+  })
+  .then(response =>{
+    if(response.status === 200)
+      return response.json();
+
+    if(response.status === 401)
+    {
+      ResetFormField();
+      setErrorMessage("Incorrect Credentials!");
+    }
+
+    if(response.status === 500){
+      ResetFormField();
+      setErrorMessage("Internal Server Error!");
+    }  
+
+    setTimeout(() => setErrorMessage(""), 5000);
+    return response.json();
+
+  })
+  .then(data => {
+      if (data && data.token) {
+          // Store the token in a cookie
+          document.cookie = `token=${data.token}; path=/; secure; httponly`;
+          navigate('/', { state: { isLoggedIn: true } });
+      } else {
+          console.error('Token not received:', data);
+      }
+  })
+  .catch(error => {
+    ResetFormField();
+    setErrorMessage("An error occurred. Try again later!");
+    setTimeout(() => setErrorMessage(""), 5000);  // Clear error message after 5 seconds
+});
   };
 
   return (
@@ -27,9 +73,9 @@ const LoginForm = () => {
       </div>
       <div className="md:w-1/2 md:pl-8 md:justify-center w-full relative bg-cover bg-center bg-login-form-bg md:bg-none">
         <form className="space-y-3 flex flex-col items-center" onSubmit={onFormSubmit}>
-          <h1 className="text-3xl font-bold mb-4">Welcome!</h1>
-          <p className="mb-6 text-lg">Please Login to your account</p>
-
+          <h1 className="text-3xl font-bold">Welcome!</h1>
+          <p className="text-lg">Please Login to your account</p>
+          <p className="text-red-700 font-semibold">{errorMessage}</p>
           <div className="w-3/4">
             <label className="block mb-2">Email</label>
             <input

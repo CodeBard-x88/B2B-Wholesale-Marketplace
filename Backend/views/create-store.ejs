@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #555;
+            display: block;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Create Store</h1>
+    <form id="store-form" action="/seller/createstore" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="logo">Store Logo (Upload Image)</label>
+            <input type="file" name="logo" id="logo" required>
+        </div>
+
+        <div class="form-group">
+            <label for="StoreOwner">Store Owner (This will be automatically set)</label>
+            <!-- Assuming 'userId' is passed from the server -->
+            <input type="text" name="StoreOwner" id="StoreOwner" value="<%= userId %>" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="storeName">Store Name</label>
+            <input type="text" name="storeName" id="storeName" required>
+        </div>
+
+        <div class="form-group">
+            <label for="Followers">Followers (Default: 0)</label>
+            <input type="number" name="Followers" id="Followers" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="StoreRatings">Store Ratings (Default: 0)</label>
+            <input type="number" name="StoreRatings" id="StoreRatings" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="TotalProducts">Total Products</label>
+            <input type="number" name="TotalProducts" id="TotalProducts" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="category">Product Categories (Comma separated)</label>
+            <textarea name="category" id="category" rows="3" placeholder="e.g. Electronics, Clothing, Home Appliances"></textarea>
+        </div>
+
+        <button type="submit">Create Store</button>
+    </form>
+</div>
+
+<script>
+  document.getElementById('store-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    
+    // Get the JWT token from localStorage or wherever it's stored
+    const token = localStorage.getItem('jwt');
+    
+    if (!token) {
+      alert('Authentication token missing!');
+      return;
+    }
+
+    // Create a FormData object to capture form data, including files
+    const formData = new FormData(this);
+
+    // Send the form data with Authorization header
+    fetch('/seller/createstore', {
+      method: 'POST',
+      headers: {
+        'authorization': `${token}`
+      },
+      body: formData // Attach the form data as the body of the request
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Store created:', data);
+      // Handle success (e.g., show a success message, redirect, etc.)
+    })
+    .catch(error => {
+      console.error('Error creating store:', error);
+      // Handle error (e.g., show an error message)
+    });
+  });
+</script>
+
+</body>
+</html>
