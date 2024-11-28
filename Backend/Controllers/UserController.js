@@ -17,24 +17,19 @@ module.exports = {
 
     Login: async(req,res) => {
         try {
-            const { username, password } = req.body;
+            const { email, password } = req.body;
+            
+        const user = await userModel.findOne({Email: email});
     
-        //Search for username in database
-        const user = await userModel.findOne({username});
-    
-        //if user not found
         if(!user){
             return res.status(401).json({error: "Invalid Email or Password"});
         }
-    
-        //if user is found then authenticate Password
-        const isValidPassword = await user.validatePassword(password);
+            const isValidPassword = await user.validatePassword(password);
     
         if(!isValidPassword){
             return res.status(401).json({error: "Invalid Email or Password"});
         }
-    
-        const token = jwt.sign({userId: user._id , userName: user.Name, userRole: user.role}, process.env.SECRET_KEY, {expiresIn: "2 days"});
+        const token = jwt.sign({userId: user._id ,userEmail: user.Email , userName: user.Name, userRole: user.role}, process.env.SECRET_KEY, {expiresIn: "2 days"});
         res.status(200).json({token});
         } catch (error) {
             console.log(error);
