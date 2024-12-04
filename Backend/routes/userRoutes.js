@@ -15,4 +15,5 @@ router.get("/resetPassword/:userId/:resetToken", authenticatePasswordResetReques
 
 router.post("/sellerRegistration" , authenticateToken, authorizeUser('buyer'), userControllers.RegisterAsSeller);
 
+router.get("/sellerRegistrationStatus" , authenticateToken, authorizeUser("buyer"), userControllers.GetSellerAccountStatus)
 module.exports = router;
