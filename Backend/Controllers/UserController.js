@@ -154,24 +154,26 @@ module.exports = {
     },
 
     RegisterAsSeller: async(req,res) => {
-        const {businessEmail, buyerEmail, IBAN, NTN, CNIC} = req.body;
+        const {businessEmail, IBAN, NTN, CNIC} = req.body;
     
-        if(!businessEmail || !IBAN || !NTN || !CNIC || !buyerEmail){
+        if(!businessEmail || !IBAN || !NTN || !CNIC){
             return res.status(400).json({error: "A required field is empty"});
+        }
+
+        const user = await UserModel.findOne({_id: req.user.userId});
+        if(!user){
+            return res.status(500).json({error: "Can't find user! Please sign in again!"});
         }
     
         try {
             //authentication of buyer email is already done with the help of middleware
             const seller = await sellerModel.create({BusinessEmail: req.body.businessEmail,
-            AssociatedBuyerAccountEmail: req.body.buyerEmail,
+            AssociatedBuyerAccountEmail: user.Email,
             CNIC: req.body.CNIC,
             NTN: req.body.NTN,
             IBAN: req.body.IBAN,
         })
-        const user = await UserModel.findOne({_id: req.user.userId});
-        if(!user){
-            return res.status(500).json({error: "Can't find user! Please sign in again!"});
-        }
+        
         user.role = "seller";
         await user.save();
         return res.status(200).json({message: "Thanks for submitting the Seller Registration form!\nWe have recieved your request. Your applicaiton is currently in pending Status.\nApplication's status will be updated within 24 hours."})
