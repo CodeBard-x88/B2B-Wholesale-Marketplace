@@ -2,7 +2,6 @@ import React, { useState, useEffect} from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom'; 
 
-
 const ecommerceTexts = [
   "Empower Your Business",
   "Sell Globally, Grow Locally",
@@ -22,12 +21,14 @@ export default function SellerRegistrationForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isFormVisible, setIsFormVisible] = useState(false);
+
   const navigate = useNavigate();
 
   // Regex Patterns for CNIC, IBAN, and NTN
   const cnicPattern = /^\d{5}-\d{7}-\d{1}$/; // CNIC: xxxxx-yyyyyyy-z
   const ibanPattern = /^PK\d{2}[A-Z]{4}\d{16}$/; // IBAN: PKXX[4 chars][16 digits]
   const ntnPattern = /^\d{7}-\d{1}$/; // NTN: xxxxxxx-x
+
   const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
 
   useEffect(() => {
@@ -50,11 +51,12 @@ export default function SellerRegistrationForm() {
             setSuccessMessage(
               "Your request for a Seller account is pending.\nPlease check again later.\nThank you!"
             );
-  
+ 
             setTimeout(() => {
               setSuccessMessage('');
               navigate('/');
             }, 5000);
+
           }
         } else {
           setErrorMessage(`Error: ${response.status} - ${response.statusText}`);
