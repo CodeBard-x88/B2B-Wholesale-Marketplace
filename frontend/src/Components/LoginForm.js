@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import {useNavigate} from 'react-router-dom';
+import {toggleLoginStatus} from "../redux/Slices/LoginSlice"
+import { useDispatch } from "react-redux";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const navigate = useNavigate();
   const [email, setEmail] = useState(""); // Correct state declaration
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -53,7 +56,10 @@ const LoginForm = () => {
   .then(data => {
       if (data && data.token) {
           // Store the token in a cookie
-          document.cookie = `token=${data.token}; path=/; secure; httponly`;
+          const expirationDate = new Date();
+          expirationDate.setDate(expirationDate.getDate() + 2); // Set expiration to 2 days from now
+          document.cookie = `token=${data.token}; path=/; secure; httponly; expires=${expirationDate.toUTCString()}`;;
+          dispatch(toggleLoginStatus());
           navigate('/', { state: { isLoggedIn: true } });
       } else {
           console.error('Token not received:', data);

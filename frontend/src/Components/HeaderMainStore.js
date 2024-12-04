@@ -6,10 +6,16 @@ import {toggleLoginStatus} from "../redux/Slices/LoginSlice"
 import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
-  
   const  isLoggedIn = useSelector((state) => state.login.value) ;
   const dispatch = useDispatch();
   const [profileOptionsVisible, setProfileOptionsVisible] = useState(false);
+
+  function Logout(e){
+    e.preventDefault();
+    const pastDate = new Date(0);  
+    document.cookie = `token=; expires=${pastDate.toUTCString()}; path=/; secure; httponly`;
+    dispatch(toggleLoginStatus());
+  }
   
   return (
     <header className="flex justify-between items-center px-4 h-14 bg-[#34383A]">
@@ -64,7 +70,7 @@ const Header = () => {
                     </button>
                     <button
                       className={`px-4 py-2  cursor-pointer text-[#FF7104] ${TextAnimationClasses.OrangeToWhite_SmallText}`}
-                      onClick={() => dispatch(toggleLoginStatus())}>
+                      onClick={() => Logout()}>
                       Logout
                     </button>
                 </div>
