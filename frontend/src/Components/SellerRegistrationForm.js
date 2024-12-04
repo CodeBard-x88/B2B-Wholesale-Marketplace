@@ -15,9 +15,14 @@ export default function SellerRegistrationForm() {
     IBAN: '',
     NTN: '',
     CNIC: '',
-    buyerEmail: '',
   })
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
+  const [errorMessage, setErrorMessage] = useState('')
+  
+  // Regex Patterns for CNIC, IBAN, and NTN
+  const cnicPattern = /^\d{5}-\d{7}-\d{1}$/;  // CNIC: xxxxx-yyyyyyy-z
+  const ibanPattern = /^PK\d{2}[A-Z]{4}\d{16}$/;  // IBAN: PKXX[4 chars][16 digits]
+  const ntnPattern = /^\d{7}-\d{1}$/;  // NTN: xxxxxxx-x
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,9 +35,59 @@ export default function SellerRegistrationForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    if (!cnicPattern.test(formData.CNIC)) {
+      setErrorMessage("Invalid CNIC format. Correct format: xxxxx-yyyyyyy-z");
+      return false;
+    }
+    if (!ibanPattern.test(formData.IBAN)) {
+      setErrorMessage("Invalid IBAN format. Correct format: PKXX[4 chars][16 digits]");
+      return false;
+    }
+    if (!ntnPattern.test(formData.NTN)) {
+      setErrorMessage("Invalid NTN format. Correct format: xxxxxxx-x");
+      return false;
+    }
+    return true;
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(formData)
+    setErrorMessage('') // Clear any previous error message
+
+    // Validate form
+    if (!validateForm()) return
+
+    // Read the token from the cookie
+    const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
+
+    if (!token) {
+      setErrorMessage("Authentication token not found.");
+      return;
+    }
+
+    try {
+      // Send the POST request with form data and authorization header
+      const response = await fetch('http://localhost:5000/users/sellerRegistration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.status === 200) {
+        const data = await response.json()
+        console.log("Registration successful:", data)
+        // Redirect or show success message here
+      } else {
+        const errorData = await response.json()
+        setErrorMessage(errorData.message || 'Registration failed.');
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred. Please try again later.");
+    }
   }
 
   return (
@@ -105,6 +160,7 @@ export default function SellerRegistrationForm() {
           className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md"
         >
           <h2 className="text-3xl font-bold mb-6 text-center text-[#FF7104]">Seller Registration</h2>
+          {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
           <form onSubmit={handleSubmit} className="space-y-4">
             {Object.entries(formData).map(([key, value], index) => (
               <motion.div
@@ -124,7 +180,7 @@ export default function SellerRegistrationForm() {
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF7104] transition-all duration-200"
-                  placeholder={`Enter your ${key}`}
+                  placeholder={key === 'CNIC' ? 'xxxxx-yyyyyyy-z' : key === 'IBAN' ? 'PKxx[4 chars][16 digits]' : key === 'NTN' ? 'xxxxxxx-x' : `Enter your ${key}`}
                 />
               </motion.div>
             ))}
@@ -142,4 +198,3 @@ export default function SellerRegistrationForm() {
     </div>
   )
 }
-
