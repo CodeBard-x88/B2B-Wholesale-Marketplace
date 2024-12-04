@@ -60,7 +60,7 @@ const Header = () => {
                       <Link to="/profile">Go to Profile</Link>
                     </button>
                     <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
-                      <Link to="/seller">Become a Seller</Link>
+                      <Link to="/SellerRegistration">Become a Seller</Link>
                     </button>
                     <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
                       <Link to="/orders">Current Orders</Link>

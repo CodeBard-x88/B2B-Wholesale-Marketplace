@@ -10,6 +10,7 @@ import CategoryHeader from "./Components/CategoriesHeader";
 import Home from "./Components/Home";
 import LoginForm from "./Components/LoginForm";
 import ProductDescription from "./Components/ProductDescription";
+import SellerRegistrationForm from "./Components/SellerRegistrationForm"
 
 library.add(fab, faUser, faMagnifyingGlass)
 
@@ -31,6 +32,10 @@ const App = () => {
     {
       path: '/productDescription',
       element: <><HeaderMainStore/><CategoryHeader/><ProductDescription/></>
+    },
+    {
+      path: '/SellerRegistration',
+      element: <><HeaderMainStore/><SellerRegistrationForm /></>
     }
   ]);
   return (
