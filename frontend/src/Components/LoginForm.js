@@ -60,7 +60,7 @@ const LoginForm = () => {
           expirationDate.setDate(expirationDate.getDate() + 2); // Set expiration to 2 days from now
           document.cookie = `token=${data.token}; path=/; secure; httponly; expires=${expirationDate.toUTCString()}`;;
           dispatch(toggleLoginStatus());
-          navigate('/', { state: { isLoggedIn: true } });
+          navigate('/');
       } else {
           console.error('Token not received:', data);
       }
