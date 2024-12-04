@@ -8,7 +8,7 @@ const authenticateToken = (req,res,next) => {
     const token = req.headers['authorization'];
 
     if(!token){
-        return res.status(401).json({message: "Access Denied! No token provided!"});
+        return res.status(401).json({error: "Access Denied! No token provided!"});
      }
 
      try {
