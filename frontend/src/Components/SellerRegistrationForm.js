@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom'; // Assuming you are using react-router
 
 const ecommerceTexts = [
   "Empower Your Business",
@@ -7,7 +8,7 @@ const ecommerceTexts = [
   "Your Success, Our Platform",
   "Unleash Your Potential",
   "Connect, Sell, Thrive",
-]
+];
 
 export default function SellerRegistrationForm() {
   const [formData, setFormData] = useState({
@@ -15,54 +16,58 @@ export default function SellerRegistrationForm() {
     IBAN: '',
     NTN: '',
     CNIC: '',
-  })
-  const [currentTextIndex, setCurrentTextIndex] = useState(0)
-  const [errorMessage, setErrorMessage] = useState('')
-  
+  });
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isFormVisible, setIsFormVisible] = useState(true);
+  const navigate = useNavigate();
+
   // Regex Patterns for CNIC, IBAN, and NTN
-  const cnicPattern = /^\d{5}-\d{7}-\d{1}$/;  // CNIC: xxxxx-yyyyyyy-z
-  const ibanPattern = /^PK\d{2}[A-Z]{4}\d{16}$/;  // IBAN: PKXX[4 chars][16 digits]
-  const ntnPattern = /^\d{7}-\d{1}$/;  // NTN: xxxxxxx-x
+  const cnicPattern = /^\d{5}-\d{7}-\d{1}$/; // CNIC: xxxxx-yyyyyyy-z
+  const ibanPattern = /^PK\d{2}[A-Z]{4}\d{16}$/; // IBAN: PKXX[4 chars][16 digits]
+  const ntnPattern = /^\d{7}-\d{1}$/; // NTN: xxxxxxx-x
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % ecommerceTexts.length)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % ecommerceTexts.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const validateForm = () => {
     if (!cnicPattern.test(formData.CNIC)) {
-      setErrorMessage("Invalid CNIC format. Correct format: xxxxx-yyyyyyy-z");
+      setErrorMessage('Invalid CNIC format. Correct format: xxxxx-yyyyyyy-z');
       return false;
     }
     if (!ibanPattern.test(formData.IBAN)) {
-      setErrorMessage("Invalid IBAN format. Correct format: PKXX[4 chars][16 digits]");
+      setErrorMessage('Invalid IBAN format. Correct format: PKXX[4 chars][16 digits]');
       return false;
     }
     if (!ntnPattern.test(formData.NTN)) {
-      setErrorMessage("Invalid NTN format. Correct format: xxxxxxx-x");
+      setErrorMessage('Invalid NTN format. Correct format: xxxxxxx-x');
       return false;
     }
     return true;
-  }
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setErrorMessage('') // Clear any previous error message
+    e.preventDefault();
+    setErrorMessage(''); // Clear any previous error message
+    setSuccessMessage(''); // Clear any previous success message
 
     // Validate form
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
     // Read the token from the cookie
     const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
 
     if (!token) {
-      setErrorMessage("Authentication token not found.");
+      setErrorMessage('Authentication token not found.');
       return;
     }
 
@@ -72,23 +77,32 @@ export default function SellerRegistrationForm() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'authorization': `Bearer ${token}`,
+          authorization: `${token}`,
         },
         body: JSON.stringify(formData),
-      })
+      });
 
       if (response.status === 200) {
-        const data = await response.json()
-        console.log("Registration successful:", data.message)
-        // Redirect or show success message here
+        const data = await response.json();
+        setSuccessMessage(data.message || 'Registration successful!');
+        setIsFormVisible(false);
+
+        // Wait 5 seconds, then navigate to '/'
+        setTimeout(() => {
+          setSuccessMessage('');
+          navigate('/');
+        }, 5000);
       } else {
-        const errorData = await response.json()
+        const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed.');
       }
     } catch (error) {
-      setErrorMessage("An error occurred. Please try again later.");
+      setErrorMessage('An error occurred. Please try again later.');
     }
-  }
+
+    // Clear error message after 5 seconds
+    setTimeout(() => setErrorMessage(''), 5000);
+  };
 
   return (
     <div className="min-h-screen flex bg-[#34383A]">
@@ -122,7 +136,7 @@ export default function SellerRegistrationForm() {
           transition={{
             duration: 5,
             repeat: Infinity,
-            repeatType: "reverse",
+            repeatType: 'reverse',
           }}
         />
         <motion.div
@@ -134,7 +148,7 @@ export default function SellerRegistrationForm() {
           transition={{
             duration: 7,
             repeat: Infinity,
-            repeatType: "reverse",
+            repeatType: 'reverse',
           }}
         />
         <motion.div
@@ -146,7 +160,7 @@ export default function SellerRegistrationForm() {
           transition={{
             duration: 6,
             repeat: Infinity,
-            repeatType: "reverse",
+            repeatType: 'reverse',
           }}
         />
       </div>
@@ -161,40 +175,51 @@ export default function SellerRegistrationForm() {
         >
           <h2 className="text-3xl font-bold mb-6 text-center text-[#FF7104]">Seller Registration</h2>
           {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {Object.entries(formData).map(([key, value], index) => (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
+          {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
+          {isFormVisible && (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {Object.entries(formData).map(([key, value], index) => (
+                <motion.div
+                  key={key}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <label htmlFor={key} className="block text-sm font-medium text-gray-700 mb-1">
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </label>
+                  <input
+                    type={key.includes('Email') ? 'email' : 'text'}
+                    id={key}
+                    name={key}
+                    value={value}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF7104] transition-all duration-200"
+                    placeholder={
+                      key === 'CNIC'
+                        ? 'xxxxx-yyyyyyy-z'
+                        : key === 'IBAN'
+                        ? 'PKxx[4 chars][16 digits]'
+                        : key === 'NTN'
+                        ? 'xxxxxxx-x'
+                        : `Enter your ${key}`
+                    }
+                  />
+                </motion.div>
+              ))}
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-[#FF7104] text-white py-2 px-4 rounded-md hover:bg-[#FF8C3D] transition-colors duration-200 font-semibold text-lg mt-6"
               >
-                <label htmlFor={key} className="block text-sm font-medium text-gray-700 mb-1">
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </label>
-                <input
-                  type={key.includes('Email') ? 'email' : 'text'}
-                  id={key}
-                  name={key}
-                  value={value}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF7104] transition-all duration-200"
-                  placeholder={key === 'CNIC' ? 'xxxxx-yyyyyyy-z' : key === 'IBAN' ? 'PKxx[4 chars][16 digits]' : key === 'NTN' ? 'xxxxxxx-x' : `Enter your ${key}`}
-                />
-              </motion.div>
-            ))}
-            <motion.button
-              type="submit"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full bg-[#FF7104] text-white py-2 px-4 rounded-md hover:bg-[#FF8C3D] transition-colors duration-200 font-semibold text-lg mt-6"
-            >
-              Register
-            </motion.button>
-          </form>
+                Register
+              </motion.button>
+            </form>
+          )}
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
