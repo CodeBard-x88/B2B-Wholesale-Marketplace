@@ -58,7 +58,7 @@ const LoginForm = () => {
           // Store the token in a cookie
           const expirationDate = new Date();
           expirationDate.setDate(expirationDate.getDate() + 2); // Set expiration to 2 days from now
-          document.cookie = `token=${data.token}; path=/; secure; httponly; expires=${expirationDate.toUTCString()}`;;
+          document.cookie = `token=${data.token}; path=/; expires=${expirationDate.toUTCString()}`;;
           dispatch(toggleLoginStatus());
           navigate('/');
       } else {
