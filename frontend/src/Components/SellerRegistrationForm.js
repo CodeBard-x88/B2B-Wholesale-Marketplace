@@ -49,7 +49,12 @@ export default function SellerRegistrationForm() {
             return;
           }
           else if(data.status === "isPending"){
-            setSuccessMessage("Your request for Seller account is pending.\nPlease check again, later.\nThankyou!")
+            setSuccessMessage("Your request for Seller account is pending.\nPlease check again, later.\nThankyou!");
+            setTimeout(() => {
+              setSuccessMessage('');
+              navigate('/');
+            }, 5000);
+    
           }
     
         })
