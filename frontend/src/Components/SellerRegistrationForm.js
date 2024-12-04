@@ -31,41 +31,43 @@ export default function SellerRegistrationForm() {
 
   const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
 
-  useEffect( ()=>{
-    async function GetSellerStatus(){
+  useEffect(() => {
+    async function GetSellerStatus() {
       try {
         const response = await fetch('http://localhost:5000/users/sellerRegistrationStatus', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            authorization: `${token}`,
-          }
-        }).then(async() => {
-          if(response.status === 200)
-            return await response.json();
-          
-        }).then(data => {
-          if(data.status === "buyer"){
+            authorization: `${token}`, // Ensure `token` is defined or passed as a prop
+          },
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+  
+          if (data.status === "buyer") {
             setIsFormVisible(true);
-            return;
-          }
-          else if(data.status === "isPending"){
-            setSuccessMessage("Your request for Seller account is pending.\nPlease check again, later.\nThankyou!");
+          } else if (data.status === "pending") {
+            setSuccessMessage(
+              "Your request for a Seller account is pending.\nPlease check again later.\nThank you!"
+            );
+ 
             setTimeout(() => {
               setSuccessMessage('');
               navigate('/');
             }, 5000);
-    
+
           }
-    
-        })
+        } else {
+          setErrorMessage(`Error: ${response.status} - ${response.statusText}`);
+        }
       } catch (error) {
-        setErrorMessage("An Error Occured!\nPlease try again, later.")
+        setErrorMessage("An error occurred! Please try again later.");
       }
     }
-
-  GetSellerStatus();
-  }, [token]);
+  
+    GetSellerStatus();
+  }, [token]); 
   
 
   useEffect(() => {
