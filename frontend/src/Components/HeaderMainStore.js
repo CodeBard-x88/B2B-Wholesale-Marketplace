@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { TextAnimationClasses, IconsAnimationClasses } from "../Utilities";
+import {toggleLoginStatus} from "../redux/Slices/LoginSlice"
+import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
-  const location = useLocation();
-  const { isLoggedIn = false } = location.state || {};
+  
+  const  isLoggedIn = useSelector((state) => state.login.value) ;
+  const dispatch = useDispatch();
   const [profileOptionsVisible, setProfileOptionsVisible] = useState(false);
-
+  
   return (
     <header className="flex justify-between items-center px-4 h-14 bg-[#34383A]">
       <div className="flex items-center">
@@ -61,7 +64,7 @@ const Header = () => {
                     </button>
                     <button
                       className={`px-4 py-2  cursor-pointer text-[#FF7104] ${TextAnimationClasses.OrangeToWhite_SmallText}`}
-                      onClick={() => console.log("Logout function here")}>
+                      onClick={() => dispatch(toggleLoginStatus())}>
                       Logout
                     </button>
                 </div>
