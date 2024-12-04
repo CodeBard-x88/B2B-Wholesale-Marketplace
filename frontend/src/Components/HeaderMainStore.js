@@ -13,7 +13,7 @@ const Header = () => {
   function Logout(e){
     e.preventDefault();
     const pastDate = new Date(0);  
-    document.cookie = `token=; expires=${pastDate.toUTCString()}; path=/; secure; httponly`;
+    document.cookie = `token=; expires=${pastDate.toUTCString()}; path=/;`;
     dispatch(toggleLoginStatus());
   }
   
@@ -70,7 +70,7 @@ const Header = () => {
                     </button>
                     <button
                       className={`px-4 py-2  cursor-pointer text-[#FF7104] ${TextAnimationClasses.OrangeToWhite_SmallText}`}
-                      onClick={() => Logout()}>
+                      onClick={(e) => Logout(e)}>
                       Logout
                     </button>
                 </div>
