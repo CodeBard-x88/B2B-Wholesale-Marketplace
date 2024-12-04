@@ -79,11 +79,11 @@ export default function SellerRegistrationForm() {
 
       if (response.status === 200) {
         const data = await response.json()
-        console.log("Registration successful:", data)
+        console.log("Registration successful:", data.message)
         // Redirect or show success message here
       } else {
         const errorData = await response.json()
-        setErrorMessage(errorData.message || 'Registration failed.');
+        setErrorMessage(errorData.error || 'Registration failed.');
       }
     } catch (error) {
       setErrorMessage("An error occurred. Please try again later.");
