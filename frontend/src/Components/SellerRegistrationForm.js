@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom'; // Assuming you are using react-router
+import { useNavigate } from 'react-router-dom'; 
 
 const ecommerceTexts = [
   "Empower Your Business",
@@ -20,13 +20,48 @@ export default function SellerRegistrationForm() {
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [isFormVisible, setIsFormVisible] = useState(true);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+
   const navigate = useNavigate();
 
   // Regex Patterns for CNIC, IBAN, and NTN
   const cnicPattern = /^\d{5}-\d{7}-\d{1}$/; // CNIC: xxxxx-yyyyyyy-z
   const ibanPattern = /^PK\d{2}[A-Z]{4}\d{16}$/; // IBAN: PKXX[4 chars][16 digits]
   const ntnPattern = /^\d{7}-\d{1}$/; // NTN: xxxxxxx-x
+
+  const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
+
+  useEffect( ()=>{
+    async function GetSellerStatus(){
+      try {
+        const response = await fetch('http://localhost:5000/users/sellerRegistrationStatus', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: `${token}`,
+          }
+        }).then(async() => {
+          if(response.status === 200)
+            return await response.json();
+          
+        }).then(data => {
+          if(data.status === "buyer"){
+            setIsFormVisible(true);
+            return;
+          }
+          else if(data.status === "isPending"){
+            setSuccessMessage("Your request for Seller account is pending.\nPlease check again, later.\nThankyou!")
+          }
+    
+        })
+      } catch (error) {
+        setErrorMessage("An Error Occured!\nPlease try again, later.")
+      }
+    }
+
+  GetSellerStatus();
+  }, [token]);
+  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,7 +99,6 @@ export default function SellerRegistrationForm() {
     if (!validateForm()) return;
 
     // Read the token from the cookie
-    const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
 
     if (!token) {
       setErrorMessage('Authentication token not found.');
@@ -220,6 +254,7 @@ export default function SellerRegistrationForm() {
           )}
         </motion.div>
       </div>
+      
     </div>
   );
 }
