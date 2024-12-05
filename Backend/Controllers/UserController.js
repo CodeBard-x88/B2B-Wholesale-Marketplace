@@ -159,6 +159,11 @@ module.exports = {
         if(!businessEmail || !IBAN || !NTN || !CNIC){
             return res.status(400).json({error: "A required field is empty"});
         }    
+
+        const user = await userModel.findOne({Email: req.body.userEmail});
+        if(!user){
+            return res.status(400).json({error: "User not found!"});
+        }
         try {
             const seller = await sellerModel.create({BusinessEmail: req.body.businessEmail,
             AssociatedBuyerAccountEmail: req.user.userEmail,
@@ -166,7 +171,8 @@ module.exports = {
             NTN: req.body.NTN,
             IBAN: req.body.IBAN,
         })
-        
+        user.role = 'seller';
+        await user.save();
         return res.status(200).json({message: "Thanks for submitting the Seller Registration form!\nWe have recieved your request. Your applicaiton is currently in pending Status.\nApplication's status will be updated within 24 hours."})
         } catch (error) {
            return res.send(500).json({error: "An error occurred while submitting the form!\n Apologies for the inconvenience! Please try again later."})
