@@ -34,8 +34,8 @@ module.exports ={
                 return res.status(400).json({ error: "Store name is not provided!" });
             }
     
-            const user = await UserModel.findOne({ _id: req.user.userId, role: `${ROLE_ALLOWED}` });
-            if (!user) {
+            const seller = await SellerModel.findOne({AssociatedBuyerAccountEmail: req.user.userEmail});
+            if (!seller) {
                 return res.status(500).json({ error: "Internal Server Error!" });
             }
     
