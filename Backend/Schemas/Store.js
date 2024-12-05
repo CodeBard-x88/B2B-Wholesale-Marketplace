@@ -3,7 +3,7 @@ const db = require("../config/db");
 
 const StoreSchema = db.Schema({
     LogoURL: {type: String, required: true},
-    StoreOwner: {type: mongoose.Schema.Types.ObjectId, ref: "user", required: true},
+    StoreOwner: {type: mongoose.Schema.Types.ObjectId, ref: "sellers", required: true},
     StoreName: {type: String, required: true},
     Followers: {type: Number, default: 0},
     StoreRatings: {type: Number, default: 0},

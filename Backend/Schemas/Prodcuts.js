@@ -9,14 +9,15 @@ const ProductSchema = db.Schema({
     Description: {type: String, required: true},
     KeyFeatures: {type: String},
     Store: {type:mongoose.Schema.Types.ObjectId, ref: "Store", required: true},
-    Seller: {type:mongoose.Schema.Types.ObjectId, ref: "user", required: true},
+    Seller: {type:mongoose.Schema.Types.ObjectId, ref: "Sellers", required: true},
     Price: {type: mongoose.Schema.Types.Decimal128, required: true},
     MinimumOrder: {type: Number, required: true},
+    Stock: {type: Number, required: true},
     variations: [String],
     category: {type:String, required: true},
     Dimensions: [{label: String, value: String}],
     Keywords: [String],
-    RatingsReviews: {type: mongoose.Schema.Types.ObjectId, ref: "RatingsReviews"},
+    RatingsReviews: {type: mongoose.Schema.Types.ObjectId, ref: "RatingsReviews", default: null},
     AverageRating: {type: mongoose.Schema.Types.Decimal128, default: 0},
     TotalReviews: {type: Number, default: 0},
     TotalSold: {type: Number, default: 0},
@@ -25,7 +26,9 @@ const ProductSchema = db.Schema({
     SKU: {type: String},
     Tags: [String],
     FAQs: [{Question: String, Answer: String}],
-    WishlistCount: {type: Number, default: 0}
+    WishlistCount: {type: Number, default: 0},
+    HasFreeShipping: {type: Boolean, default: false},
+    IsTopRated: {type: Boolean, default: false},
 });
 
 ProductSchema.pre('save', function (next) {

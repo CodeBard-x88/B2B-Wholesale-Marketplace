@@ -9,6 +9,6 @@ const SellerSchema = db.Schema({
     sellerAccountStatus : {type: String, enum: ['pending', 'approved' , 'rejected', 'temporarilyBlocked'], default: 'pending'}
 })
 
-const SellerModel = db.model("Sellers" , SellerSchema);
+const SellerModel = db.model("sellers" , SellerSchema);
 
 module.exports = SellerModel;
