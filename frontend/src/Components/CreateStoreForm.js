@@ -51,15 +51,19 @@ export default function StoreCreator() {
     }
   }
 
+  const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("logo", logo);
     formData.append("storeName", storeName);
-    formData.append("category", [selectedCategories]); // Submit categories as a comma-separated string
+    formData.append("category", selectedCategories); // Submit categories as a comma-separated string
     try {
         const response = await fetch('http://localhost:5000/seller/createstore', {
           method: 'POST',
+          headers: {
+            authorization: `${token}`,
+          },
           body: formData, 
         });
 
