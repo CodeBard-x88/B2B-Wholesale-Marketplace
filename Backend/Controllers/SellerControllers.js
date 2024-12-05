@@ -2,8 +2,7 @@ const formidable = require("formidable");
 const fs = require("fs");
 const path = require("path");
 const StoreModel = require("../Schemas/Store");
-const UserModel = require("../Schemas/users");
-
+const SellerModel = require("../Schemas/Seller");
 const ROLE_ALLOWED = "buyer";
 
 module.exports ={
