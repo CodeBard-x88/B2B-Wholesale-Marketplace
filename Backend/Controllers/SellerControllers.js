@@ -68,7 +68,7 @@ module.exports ={
                     ProductCategories: categories
                 });
     
-                return res.status(200).json({ message: "Store created successfully", store });
+                return res.status(200).json({ message: "Store created successfully", store: store, storeStatus:true });
             });
         });
     }
