@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const StoreModel = require("../Schemas/Store");
 const SellerModel = require("../Schemas/Seller");
-const ROLE_ALLOWED = "buyer";
+const ROLE_ALLOWED = "seller";
 
 module.exports ={
     StoreRegistrationForm: (req, res) => {
