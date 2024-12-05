@@ -30,7 +30,7 @@ module.exports = {
             return res.status(401).json({error: "Invalid Email or Password"});
         }
         const token = jwt.sign({userId: user._id ,userEmail: user.Email , userName: user.Name, userRole: user.role}, process.env.SECRET_KEY, {expiresIn: "2 days"});
-        res.status(200).json({token});
+        res.status(200).json({token, role: user.role , storeStatus: hasStore});
         } catch (error) {
             console.log(error);
             res.status(500).json({error: "An error occurred while logging in!"});
@@ -160,7 +160,7 @@ module.exports = {
             return res.status(400).json({error: "A required field is empty"});
         }    
 
-        const user = await userModel.findOne({Email: req.body.userEmail});
+        const user = await userModel.findOne({Email: req.user.userEmail});
         if(!user){
             return res.status(400).json({error: "User not found!"});
         }
