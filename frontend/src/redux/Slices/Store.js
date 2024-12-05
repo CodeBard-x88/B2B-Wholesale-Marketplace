@@ -9,7 +9,7 @@ export const StoreStatus = createSlice({
   initialState,
   reducers: {
     SetStoreStatus: (state, value) => {
-        state.value = value;
+        state.value = value.payload;
     },
   },
 });
