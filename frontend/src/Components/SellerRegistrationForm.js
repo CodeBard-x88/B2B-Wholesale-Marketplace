@@ -1,6 +1,8 @@
 import React, { useState, useEffect} from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom'; 
+import { useDispatch } from 'react-redux';
+import { SetUserRole } from '../redux/Slices/UserRole';
 
 const ecommerceTexts = [
   "Empower Your Business",
@@ -11,6 +13,9 @@ const ecommerceTexts = [
 ];
 
 export default function SellerRegistrationForm() {
+
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     businessEmail: '',
     IBAN: '',
@@ -125,6 +130,7 @@ export default function SellerRegistrationForm() {
 
       if (response.status === 200) {
         const data = await response.json();
+        dispatch(SetUserRole(data.role));
         setSuccessMessage(data.message || 'Registration successful!');
         setIsFormVisible(false);
 

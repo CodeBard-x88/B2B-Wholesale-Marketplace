@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import {useNavigate} from 'react-router-dom';
 import {toggleLoginStatus} from "../redux/Slices/LoginSlice"
+import { SetUserRole } from "../redux/Slices/UserRole";
 import { useDispatch } from "react-redux";
+import { SetStoreStatus } from "../redux/Slices/Store";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -55,7 +57,8 @@ const LoginForm = () => {
   })
   .then(data => {
       if (data && data.token) {
-          // Store the token in a cookie
+          dispatch(SetUserRole(data.role));
+          dispatch(SetStoreStatus(data.storeStatus));
           const expirationDate = new Date();
           expirationDate.setDate(expirationDate.getDate() + 2); // Set expiration to 2 days from now
           document.cookie = `token=${data.token}; path=/; expires=${expirationDate.toUTCString()}`;;
