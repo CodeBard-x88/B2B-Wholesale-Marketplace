@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
   const  isLoggedIn = useSelector((state) => state.login.value) ;
+  const UserRole = useSelector((state) => state.userrole.value);
+  const HasStore = useSelector(state => state.storeStatus.value);
   const dispatch = useDispatch();
   const [profileOptionsVisible, setProfileOptionsVisible] = useState(false);
 
@@ -19,6 +21,7 @@ const Header = () => {
   
   return (
     <header className="flex justify-between items-center px-4 h-14 bg-[#34383A]">
+      <Link to="/">
       <div className="flex items-center">
         <img
           src="KaroobarLogo.png"
@@ -26,7 +29,8 @@ const Header = () => {
           className="h-12"
         />
       </div>
-
+      </Link>
+      
       <div className="hidden md:w-1/2 md:items-center md:flex md:justify-center">
         <input
           type="text"
@@ -59,9 +63,20 @@ const Header = () => {
                     <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
                       <Link to="/profile">Go to Profile</Link>
                     </button>
-                    <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
-                      <Link to="/SellerRegistration">Become a Seller</Link>
+                    { UserRole === 'buyer' ?
+                      <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
+                        <Link to="/SellerRegistration">Become a Seller</Link>
+                      </button>:
+                      !HasStore?
+                      <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
+                        <Link to="/CreateStore">Create Store</Link>
+                      </button>:<></>
+                    }
+                    {
+                      HasStore && <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
+                      <Link to="/SellerRegistration">Dashboard</Link>
                     </button>
+                    }
                     <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
                       <Link to="/orders">Current Orders</Link>
                     </button>
