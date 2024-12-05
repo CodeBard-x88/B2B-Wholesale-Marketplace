@@ -63,7 +63,7 @@ module.exports ={
                 // Create the store and save the logo URL
                 const store = await StoreModel.create({
                     LogoURL: `/uploads/logos/${customFilename}`,
-                    StoreOwner: user._id,
+                    StoreOwner: seller._id,
                     StoreName: fields.storeName[0],
                     ProductCategories: categories
                 });
