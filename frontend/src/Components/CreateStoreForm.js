@@ -71,7 +71,7 @@ export default function StoreCreator() {
             const result = await response.json();
             if(result.storeStatus){
                 dispatch(SetStoreStatus(result.storeStatus));
-                setInterval(() => navigate("/"),5000);
+                setTimeout(() => navigate("/"),5000);
             }
         }
       } catch (error) {
