@@ -6,7 +6,7 @@ const SellerSchema = db.Schema({
     CNIC: {type: String, required: true},
     NTN: {type: String, required: true},
     IBAN : {type: String, required: true},
-    sellerAccountStatus : {type: String, enum: ['pending', 'approved' , 'rejected', 'temporarilyBlocked'], default: 'pending'}
+    sellerAccountStatus : {type: String, enum: ['approved'], default: 'approved'}
 })
 
 const SellerModel = db.model("sellers" , SellerSchema);
