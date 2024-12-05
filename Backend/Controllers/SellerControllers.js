@@ -2,16 +2,10 @@ const formidable = require("formidable");
 const fs = require("fs");
 const path = require("path");
 const StoreModel = require("../Schemas/Store");
-const UserModel = require("../Schemas/users");
-
-const ROLE_ALLOWED = "buyer";
+const SellerModel = require("../Schemas/Seller");
+const ROLE_ALLOWED = "seller";
 
 module.exports ={
-    StoreRegistrationForm: (req, res) => {
-        const userId = "Muhammad Tayyab";  // The value you want to pass to EJS
-        res.render("create-store.ejs", { userId: userId }); // Passing as an object
-    },
-
     RegisterStore: async (req, res) => {
         const form = new formidable.IncomingForm();
         form.keepExtensions = true;
@@ -34,8 +28,8 @@ module.exports ={
                 return res.status(400).json({ error: "Store name is not provided!" });
             }
     
-            const user = await UserModel.findOne({ _id: req.user.userId, role: `${ROLE_ALLOWED}` });
-            if (!user) {
+            const seller = await SellerModel.findOne({AssociatedBuyerAccountEmail: req.user.userEmail});
+            if (!seller) {
                 return res.status(500).json({ error: "Internal Server Error!" });
             }
     
@@ -64,12 +58,12 @@ module.exports ={
                 // Create the store and save the logo URL
                 const store = await StoreModel.create({
                     LogoURL: `/uploads/logos/${customFilename}`,
-                    StoreOwner: user._id,
+                    StoreOwner: seller._id,
                     StoreName: fields.storeName[0],
                     ProductCategories: categories
                 });
     
-                return res.status(200).json({ message: "Store created successfully", store });
+                return res.status(200).json({ message: "Store created successfully", store: store, storeStatus:true });
             });
         });
     }
