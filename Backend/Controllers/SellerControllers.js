@@ -6,11 +6,6 @@ const SellerModel = require("../Schemas/Seller");
 const ROLE_ALLOWED = "seller";
 
 module.exports ={
-    StoreRegistrationForm: (req, res) => {
-        const userId = "Muhammad Tayyab";  // The value you want to pass to EJS
-        res.render("create-store.ejs", { userId: userId }); // Passing as an object
-    },
-
     RegisterStore: async (req, res) => {
         const form = new formidable.IncomingForm();
         form.keepExtensions = true;

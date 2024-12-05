@@ -3,9 +3,7 @@ const { authenticateToken, authorizeUser } = require("../middlewares/usersMiddle
 const router = express.Router();
 const sellerControllers = require("../Controllers/SellerControllers");
 
-const ROLE_ALLOWED = "buyer";
-
-router.get("/storeRegistrationForm", sellerControllers.StoreRegistrationForm);
+const ROLE_ALLOWED = "seller";
 
 router.post("/createstore", authenticateToken, authorizeUser(ROLE_ALLOWED), sellerControllers.RegisterStore);
 
