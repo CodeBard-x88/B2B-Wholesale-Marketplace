@@ -21,7 +21,7 @@ const Header = () => {
   }
   
   return (
-    <header className="flex justify-between items-center px-4 h-14 bg-[#34383A]">
+    <header className="flex justify-between items-center px-4 h-14 bg-[#34383A] sticky top-0">
       <Link to="/">
       <div className="flex items-center">
         <img
@@ -75,7 +75,7 @@ const Header = () => {
                     }
                     {
                       HasStore && <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>
-                      <Link to="/SellerRegistration">Dashboard</Link>
+                      <Link to="/Dashboard">Dashboard</Link>
                     </button>
                     }
                     <button className={`px-4 py-2 cursor-pointer ${TextAnimationClasses.WhiteToOrange_SmallText} `}>

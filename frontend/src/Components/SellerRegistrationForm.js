@@ -35,56 +35,6 @@ export default function SellerRegistrationForm() {
   const ntnPattern = /^\d{7}-\d{1}$/; // NTN: xxxxxxx-x
 
   const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
-
-  // useEffect(() => {
-  //   let timeoutId;
-  
-  //   async function GetSellerStatus() {
-  //     try {
-  //       const response = await fetch('http://localhost:5000/users/sellerRegistrationStatus', {
-  //         method: 'GET',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           authorization: `${token}`,
-  //         },
-  //       });
-  
-  //       if (response.ok) {
-  //         const data = await response.json();
-  
-  //         if (data.status === "buyer") {
-  //           setIsFormVisible(true);
-  //         } else if (data.status === "pending") {
-  //           setSuccessMessage(
-  //             "Your request for a Seller account is pending.\nPlease check again later.\nThank you!"
-  //           );
-  
-  //           // Set a timeout to navigate and clear the success message
-  //           timeoutId = setTimeout(() => {
-  //             setSuccessMessage('');
-  //             navigate('/');
-  //           }, 5000);
-  //         }
-  //       } else {
-  //         setErrorMessage(`Error: ${response.status} - ${response.statusText}`);
-  //       }
-  //     } catch (error) {
-  //       setErrorMessage("An error occurred! Please try again later.");
-  //     }
-  //   }
-  
-  //   GetSellerStatus();
-  
-  //   // Cleanup function to clear the timeout on unmount
-  //   return () => {
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId);
-  //     }
-  //   };
-  // }, [token, navigate]);
-  
-  
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTextIndex((prevIndex) => (prevIndex + 1) % ecommerceTexts.length);
