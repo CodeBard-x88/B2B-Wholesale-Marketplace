@@ -8,17 +8,37 @@ const crypto = require('crypto');
 const transporter = require('../config/NodeMailerTransporter');
 
 module.exports = {
-    Signup: async (req,res) =>{
+    Signup: async (req, res) => {
         try {
             console.log(req.body);
-            const {Name, password, username, Email, Phone} = req.body;
-            const user = await userModel.create({Name: Name, password: password, username: username, Email: Email, Phone: Phone});
-            if(user)
-            return res.status(200);
-
-            return res.status(500);
+            
+            const { Name, password, username, Email, Phone } = req.body;
+    
+            if (!Name || !password || !username || !Email || !Phone) {
+                return res.status(400).json({ error: "All fields are required." });
+            }
+    
+            const user = await userModel.create({
+                Name,
+                password,
+                username,
+                Email,
+                Phone,
+            });
+    
+            if (user) {
+                return res.status(200).json({ message: "User created successfully!", user });
+            }
+    
+            // Handle unexpected failure to create the user
+            return res.status(500).json({ error: "Failed to create user." });
         } catch (error) {
-            return res.status(500).json({error: "An error occured!"});
+            if (error.code === 11000) {
+                const field = Object.keys(error.keyValue)[0];
+                return res.status(400).json({ error: `${field} already exists.` });
+            }
+            console.error(error); 
+            return res.status(500).json({ error: "An unexpected error occurred!" });
         }
     },
 
