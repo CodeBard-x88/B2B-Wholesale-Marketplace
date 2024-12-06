@@ -55,9 +55,11 @@ export default function ProductUploadForm() {
     if (files.video) data.append('video', files.video);
 
     try {
-      const response = await fetch('http://localhost:5000/AddProduct', {
+        console.log("adding product");
+      const response = await fetch('http://localhost:5000/products/AddProduct', {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             authorization: `${token}`,
         },
         body: data,
@@ -66,7 +68,9 @@ export default function ProductUploadForm() {
       if (response.ok) {
         alert('Product uploaded successfully!');
       } else {
-        alert('Error uploading product');
+        const error = await response.json();
+        alert(error.error || 'Error uploading product');
+        return;
       }
     } catch (error) {
       console.error('Upload failed', error);
