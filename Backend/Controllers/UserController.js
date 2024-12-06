@@ -8,10 +8,18 @@ const crypto = require('crypto');
 const transporter = require('../config/NodeMailerTransporter');
 
 module.exports = {
-    Signup: (req,res) =>{
-        const user = new userModel(req.body);
-        user.save();
-        res.send(user);
+    Signup: async (req,res) =>{
+        try {
+            console.log(req.body);
+            const {Name, password, username, Email, Phone} = req.body;
+            const user = await userModel.create({Name: Name, password: password, username: username, Email: Email, Phone: Phone});
+            if(user)
+            return res.status(200);
+
+            return res.status(500);
+        } catch (error) {
+            return res.status(500).json({error: "An error occured!"});
+        }
     },
 
     Login: async(req,res) => {
