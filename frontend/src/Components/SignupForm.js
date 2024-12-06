@@ -48,7 +48,8 @@ export default function SignupPage() {
     const response = await fetch("http://localhost:5000/users/submitSignupForm",
         {
             method: 'POST',
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
         }
     )
     if(response.Ok){
