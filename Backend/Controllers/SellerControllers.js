@@ -8,6 +8,7 @@ const ROLE_ALLOWED = "seller";
 module.exports ={
     RegisterStore: async (req, res) => {
         const form = new formidable.IncomingForm();
+        
         form.keepExtensions = true;
         form.uploadDir = path.join(__dirname, "../public/uploads/logos");
         form.maxFileSize = 10 * 1024 * 1024; // 10MB

@@ -1,11 +1,9 @@
 const fs = require('fs').promises;
 const path = require('path');
-const multer = require("multer");
+const formidable = require("formidable");
 const productModel = require("../Schemas/Prodcuts");
-const userModel =  require("../Schemas/users");
 const storeModel = require("../Schemas/Store");
 const sellerModel = require("../Schemas/Seller");
-const { error } = require('console');
 
 module.exports = {
     GetAllProducts: async (req, res) => {
@@ -58,137 +56,140 @@ module.exports = {
         }
     },
 
-    CreateProduct: async (req, res) => {
-        try {
-            // Initialize Formidable
-            const form = formidable({
-                multiples: true, // Support multiple file uploads
-                uploadDir: path.join(__dirname, '../public/uploads'), // Temporary upload directory
-                keepExtensions: true, // Keep file extensions
-            });
-    
-            // Parse the form data
-            form.parse(req, async (err, fields, files) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(400).json({ error: 'Error parsing the form data' });
-                }
-    
-                // Validate seller
-                const seller = await storeModel.findOne({ AssociatedBuyerAccountEmail: req.user.userEmail });
-                if (!seller) {
-                    return res.status(404).json({ error: 'Seller not found' });
-                }
-    
-                // Validate store
-                const store = await storeModel.findOne({ StoreOwner: seller });
-                if (!store) {
-                    return res.status(404).json({ error: 'Store not found' });
-                }
-    
-                // Extract required fields
-                const {
-                    productName,
-                    productDescription,
-                    productPrice,
-                    minOrderQuantity,
-                    productCategory,
-                    Stock,
-                    keyFeatures,
-                    productDimensions,
-                    legalDisclaimers,
-                    Warranty,
-                    sku,
-                    tags,
-                    faqs,
-                    freeShipping,
-                } = fields;
-    
-                if (!productName || !productDescription || !productPrice || !minOrderQuantity || !productCategory || !Stock) {
-                    return res.status(400).json({ error: 'Missing required fields' });
-                }
-    
-                // Validate Stock and other numeric fields
-                const price = parseFloat(productPrice);
-                const minOrder = parseInt(minOrderQuantity, 10);
-                const stock = parseInt(Stock, 10);
-                if (isNaN(price) || price <= 0) return res.status(400).json({ error: 'Invalid price' });
-                if (isNaN(minOrder) || minOrder <= 0) return res.status(400).json({ error: 'Invalid minimum order quantity' });
-                if (isNaN(stock) || stock <= 0) return res.status(400).json({ error: 'Invalid stock quantity' });
-    
-                // Define file handling logic
-                const processFile = (file, type, productName, storeName, index = null) => {
-                    const baseName = `${productName}_${storeName}_${type}`;
-                    const newFileName =
-                        type === 'Thumbnail'
-                            ? `${baseName}.png`
-                            : type === 'Video'
-                            ? `${baseName}.mp4`
-                            : `${baseName}_Image_${index}.png`;
-                    const newFilePath = path.join(__dirname, '../public/uploads', newFileName);
-                    fs.renameSync(file.filepath, newFilePath);
-                    return `/uploads/${newFileName}`;
-                };
-    
-                // Process thumbnail
-                const storeName = store.StoreName; // Assuming StoreName exists in the store model
-                const thumbnailFile = files.thumbnail;
-                if (!thumbnailFile) return res.status(400).json({ error: 'Thumbnail is required' });
-                const thumbnailURL = processFile(thumbnailFile, 'Thumbnail', productName, storeName);
-    
-                // Process images
-                const imageFiles = Array.isArray(files.productImages) ? files.productImages : [files.productImages];
-                if (imageFiles.length === 0) return res.status(400).json({ error: 'At least one product image is required' });
-                const imagesURL = imageFiles.map((img, index) =>
-                    processFile(img, 'Image', productName, storeName, index + 1)
-                );
-    
-                // Process video
-                let videoURL = null;
-                if (files.video) {
-                    videoURL = processFile(files.video, 'Video', productName, storeName);
-                }
-    
-                // Construct product data
-                const newProduct = {
-                    ThumbnailURL: thumbnailURL,
-                    ImagesURL: imagesURL,
-                    Video: videoURL,
-                    Name: productName,
-                    Description: productDescription,
-                    KeyFeatures: keyFeatures || '',
-                    Store: store._id,
-                    Seller: seller._id,
-                    Price: price,
-                    MinimumOrder: minOrder,
-                    Stock: stock,
-                    variations: fields.productVariants ? JSON.parse(fields.productVariants) : [],
-                    category: productCategory,
-                    Dimensions: productDimensions ? JSON.parse(productDimensions) : [],
-                    Keywords: fields.keywords ? JSON.parse(fields.keywords) : [],
-                    LegalDisclaimers: legalDisclaimers ? JSON.parse(legalDisclaimers) : [],
-                    Warranty: Warranty || 'No Warranty',
-                    SKU: sku || null,
-                    Tags: tags ? JSON.parse(tags) : [],
-                    FAQs: faqs ? JSON.parse(faqs) : [],
-                    WishlistCount: 0,
-                    HasFreeShipping: freeShipping === 'true',
-                    IsTopRated: false,
-                    AverageRating: 0,
-                    TotalReviews: 0,
-                    TotalSold: 0,
-                };
-    
-                // Save product to database
-                const createdProduct = await productModel.create(newProduct);
-                return res.status(201).json({ message: 'Product created successfully', product: createdProduct });
-            });
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ error: 'Server error' });
-        }
-    },
 
+        CreateProduct: async (req, res) => {
+            try {
+                // Initialize Formidable with multiples option enabled
+                const form = new formidable.IncomingForm();
+                    form.keepExtensions= true, // Keep file extensions
+                    form.uploadDir= path.join(__dirname, "../public/uploads"), // Directory for uploads
+                    form.multiples= true // Allow multiple files
+                
+
+                // Parse the form data
+                form.parse(req, async (err, fields, files) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(400).json({ error: 'Error parsing the form data' });
+                    }
+    
+                    console.log("Looking for seller!");
+                    // Validate seller
+                    const seller = await sellerModel.findOne({ AssociatedBuyerAccountEmail: req.user.userEmail });
+                    if (!seller) {
+                        console.log("Seller not found");
+                        return res.status(404).json({ error: 'Seller not found' });
+                    }
+    
+                    // Validate store
+                    const store = await storeModel.findOne({ StoreOwner: seller });
+                    if (!store) {
+                        console.log("Store not found!");
+                        return res.status(404).json({ error: 'Store not found' });
+                    }
+    
+                    // Extract required fields
+                    const {
+                        productName,
+                        productDescription,
+                        productPrice,
+                        minOrderQuantity,
+                        productCategory,
+                        Stock,
+                        keyFeatures,
+                        productDimensions,
+                        legalDisclaimers,
+                        Warranty,
+                        sku,
+                        tags,
+                        faqs,
+                        freeShipping,
+                    } = fields;
+    
+                    if (!productName || !productDescription || !productPrice || !minOrderQuantity || !productCategory || !Stock) {
+                        return res.status(400).json({ error: 'Missing required fields' });
+                    }
+    
+                    // Validate Stock and other numeric fields
+                    const price = parseFloat(productPrice);
+                    const minOrder = parseInt(minOrderQuantity, 10);
+                    const stock = parseInt(Stock, 10);
+                    if (isNaN(price) || price <= 0) return res.status(400).json({ error: 'Invalid price' });
+                    if (isNaN(minOrder) || minOrder <= 0) return res.status(400).json({ error: 'Invalid minimum order quantity' });
+                    if (isNaN(stock) || stock <= 0) return res.status(400).json({ error: 'Invalid stock quantity' });
+    
+                    // Define file handling logic
+                    const processFile = (file, type, productName, storeName, index = null) => {
+                        const baseName = `${productName}_${storeName}_${type}`;
+                        const newFileName =
+                            type === 'Thumbnail'
+                                ? `${baseName}.png`
+                                : type === 'Video'
+                                ? `${baseName}.mp4`
+                                : `${baseName}_Image_${index}.png`;
+                        const newFilePath = path.join(__dirname, '../public/uploads', newFileName);
+                        fs.renameSync(file.filepath, newFilePath);
+                        return `/uploads/${newFileName}`;
+                    };
+    
+                    // Process thumbnail
+                    const storeName = store.StoreName; // Assuming StoreName exists in the store model
+                    const thumbnailFile = files.thumbnail;
+                    if (!thumbnailFile) return res.status(400).json({ error: 'Thumbnail is required' });
+                    const thumbnailURL = processFile(thumbnailFile, 'Thumbnail', productName, storeName);
+    
+                    // Process images
+                    const imageFiles = Array.isArray(files.productImages) ? files.productImages : [files.productImages];
+                    if (imageFiles.length === 0) return res.status(400).json({ error: 'At least one product image is required' });
+                    const imagesURL = imageFiles.map((img, index) =>
+                        processFile(img, 'Image', productName, storeName, index + 1)
+                    );
+    
+                    // Process video
+                    let videoURL = null;
+                    if (files.video) {
+                        videoURL = processFile(files.video, 'Video', productName, storeName);
+                    }
+    
+                    // Construct product data
+                    const newProduct = {
+                        ThumbnailURL: thumbnailURL,
+                        ImagesURL: imagesURL,
+                        Video: videoURL,
+                        Name: productName,
+                        Description: productDescription,
+                        KeyFeatures: keyFeatures || '',
+                        Store: store._id,
+                        Seller: seller._id,
+                        Price: price,
+                        MinimumOrder: minOrder,
+                        Stock: stock,
+                        variations: fields.productVariants ? JSON.parse(fields.productVariants) : [],
+                        category: productCategory,
+                        Dimensions: productDimensions ? JSON.parse(productDimensions) : [],
+                        Keywords: fields.keywords ? JSON.parse(fields.keywords) : [],
+                        LegalDisclaimers: legalDisclaimers ? JSON.parse(legalDisclaimers) : [],
+                        Warranty: Warranty || 'No Warranty',
+                        SKU: sku || null,
+                        Tags: tags ? JSON.parse(tags) : [],
+                        FAQs: faqs ? JSON.parse(faqs) : [],
+                        WishlistCount: 0,
+                        HasFreeShipping: freeShipping === 'true',
+                        IsTopRated: false,
+                        AverageRating: 0,
+                        TotalReviews: 0,
+                        TotalSold: 0,
+                    };
+    
+                    // Save product to database
+                    const createdProduct = await productModel.create(newProduct);
+                    return res.status(201).json({ message: 'Product created successfully', product: createdProduct });
+                });
+            } catch (error) {
+                console.error(error);
+                return res.status(500).json({ error: 'Server error' });
+            }
+        },
 
     deleteProduct : async (req, res) => {
         try {
