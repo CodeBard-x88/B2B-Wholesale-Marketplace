@@ -153,7 +153,7 @@ export default function SignupPage() {
               <label htmlFor="name" className="block text-sm font-medium text-[#34383A]">Name</label>
               <input
                 id="name"
-                name="name"
+                name="Name"
                 type="text"
                 required
                 value={formData.Name}
@@ -177,7 +177,7 @@ export default function SignupPage() {
               <label htmlFor="email" className="block text-sm font-medium text-[#34383A]">Email</label>
               <input
                 id="email"
-                name="email"
+                name="Email"
                 type="email"
                 required
                 value={formData.Email}
@@ -201,7 +201,7 @@ export default function SignupPage() {
               <label htmlFor="phone" className="block text-sm font-medium text-[#34383A]">Phone (Pakistani format)</label>
               <input
                 id="phone"
-                name="phone"
+                name="Phone"
                 type="tel"
                 required
                 value={formData.Phone}
