@@ -12,6 +12,7 @@ import LoginForm from "./Components/LoginForm";
 import ProductDescription from "./Components/ProductDescription";
 import SellerRegistrationForm from "./Components/SellerRegistrationForm"
 import CreateStoreForm from "./Components/CreateStoreForm";
+import SignupPage from "./Components/SignupForm";
 
 library.add(fab, faUser, faMagnifyingGlass)
 
@@ -41,6 +42,10 @@ const App = () => {
     {
       path: "/CreateStore",
       element: <><HeaderMainStore /><CreateStoreForm/></>
+    },
+    {
+      path: "/signup",
+      element: <><HeaderMainStore/><SignupPage/></>
     }
   ]);
   return (

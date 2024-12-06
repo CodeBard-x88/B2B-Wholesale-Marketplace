@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TextAnimationClasses, IconsAnimationClasses } from "../Utilities";
 import {toggleLoginStatus} from "../redux/Slices/LoginSlice"
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +10,7 @@ const Header = () => {
   const UserRole = useSelector((state) => state.userrole.value);
   const HasStore = useSelector(state => state.storeStatus.value);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [profileOptionsVisible, setProfileOptionsVisible] = useState(false);
 
   function Logout(e){
@@ -96,7 +97,7 @@ const Header = () => {
           <>
             <Link to="/login" className="text-[#FF7104] font-semibold">Login</Link>
             <div className="bg-[#FF7104] w-[1px] h-8"></div>
-            <button className="bg-red-500 border border-red-500 rounded-md shadow-sm text-white font-bold text-sm leading-4 min-h-[40px] px-4 py-3 hover:bg-transparent hover:text-red-500 active:opacity-50">
+            <button onClick={() => navigate("/signup")} className="bg-red-500 border border-red-500 rounded-md shadow-sm text-white font-bold text-sm leading-4 min-h-[40px] px-4 py-3 hover:bg-transparent hover:text-red-500 active:opacity-50">
               Signup
             </button>
           </>
