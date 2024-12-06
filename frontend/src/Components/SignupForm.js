@@ -52,8 +52,8 @@ export default function SignupPage() {
             body: JSON.stringify(formData)
         }
     )
-    if(response.Ok){
-        const loginResponse = await fetch('http://localhost:5000/users/login', {
+    if(response.status === 200){
+        const loginResponse = await fetch("http://localhost:5000/users/login", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: formData.Email, password: formData.password })
