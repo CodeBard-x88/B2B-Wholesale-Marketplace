@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 export default function ProductUploadForm() {
+  const token = document.cookie.match(/(?:^|;\s*)token=([^;]*)/)?.[1];
   const [formData, setFormData] = useState({
     productName: '',
     productDescription: '',
@@ -54,8 +55,11 @@ export default function ProductUploadForm() {
     if (files.video) data.append('video', files.video);
 
     try {
-      const response = await fetch('http://localhost:5000/products/create', {
+      const response = await fetch('http://localhost:5000/AddProduct', {
         method: 'POST',
+        headers: {
+            authorization: `${token}`,
+        },
         body: data,
       });
 
